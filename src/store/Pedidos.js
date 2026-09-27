@@ -5,7 +5,6 @@
 // mesma aba via evento customizado 'apollo-pedidos'.
 import { useEffect, useState, useCallback } from 'react';
 import { PRODUTOS_INIT } from '../constants';
-import { PERFIS } from '../site/auth';
 
 const KEY = 'apollo-pedidos';
 const EVT = 'apollo-pedidos';
@@ -54,8 +53,6 @@ export function getPedido(protocolo) {
   return read().find((p) => p.protocolo === alvo) || null;
 }
 
-// Cria um pedido a partir do site. `dados` traz tipo, cliente e os campos
-// específicos da modalidade. Devolve o pedido criado (com protocolo).
 export function criarPedido(dados) {
   const arr = read();
   const agora = Date.now();
@@ -73,7 +70,6 @@ export function criarPedido(dados) {
   return pedido;
 }
 
-// Atualiza status (uso interno, tela Pedidos). `extra` pode trazer transId/motivo.
 export function atualizarStatus(id, status, nota = '', extra = {}) {
   const arr = read().map((p) => {
     if (p.id !== id) return p;
@@ -91,7 +87,6 @@ export function removerPedido(id) {
   write(read().filter((p) => p.id !== id));
 }
 
-// Hook reativo — re-renderiza quando qualquer tela mexe no store.
 export function usePedidos() {
   const [pedidos, setPedidos] = useState(listPedidos);
 
@@ -109,7 +104,6 @@ export function usePedidos() {
   return pedidos;
 }
 
-// Só o número de pedidos aguardando triagem — para o selo na navegação.
 export function useContagemNovos() {
   const pedidos = usePedidos();
   return pedidos.filter((p) => p.status === 'Novo').length;
@@ -120,19 +114,17 @@ export function useAcao() {
 }
 
 // ── Semente de demonstração ──────────────────────────────────────────────────
-// Numa primeira visita o store nasce vazio: o Portal do noivo (dado do sistema,
-// em constants.js) aparece cheio, mas "Meus pedidos" fica sem nada. Para a demo
-// bater, semeamos alguns pedidos já ligados ao cliente exemplo — os dados do
-// cliente saem de PERFIS.cliente (auth.js), a mesma fonte da sessão. Roda só uma
-// vez: se o usuário apagar os pedidos depois, não voltam (a chave passa a
-// existir com [] e não é mais nula).
 const DIA = 86_400_000;
 const iso = (ms) => new Date(ms).toISOString().slice(0, 10);
 
 function pedidosDemo() {
   const agora = Date.now();
-  const { nome, email, tel, documento } = PERFIS.cliente;
-  const cliente = { nome, email, tel, documento };
+  const cliente = {
+    nome: 'Cliente Exemplo',
+    email: 'cliente@exemplo.com',
+    tel: '',
+    documento: '',
+  };
   const prod = (id) => PRODUTOS_INIT.find((p) => p.id === id) || {};
   const smoking = prod(2);
   const sapato = prod(8);
@@ -187,7 +179,6 @@ function pedidosDemo() {
   ];
 }
 
-// Chamada uma vez no start (main.jsx). Só semeia se o store nunca foi tocado.
 export function seedPedidosDemo() {
   try {
     if (localStorage.getItem(KEY) !== null) return;

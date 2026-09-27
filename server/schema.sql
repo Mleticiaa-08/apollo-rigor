@@ -141,3 +141,15 @@ CREATE INDEX IF NOT EXISTS idx_aj_produto ON ajustes (produto_id);
 CREATE INDEX IF NOT EXISTS idx_tx_tipo ON transacoes (tipo);
 
 CREATE INDEX IF NOT EXISTS idx_pedidos_st ON pedidos (status);
+
+-- ── Refresh tokens ────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+  id          SERIAL PRIMARY KEY,
+  usuario_id  INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+  token_hash  TEXT NOT NULL UNIQUE,        -- SHA-256 do token (nunca guardar cru)
+  expira_em   TIMESTAMPTZ NOT NULL,
+  revogado    BOOLEAN NOT NULL DEFAULT FALSE,
+  criado_em   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_refresh_usuario ON refresh_tokens(usuario_id);

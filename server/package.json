@@ -6,7 +6,8 @@
         "dev": "node --watch src/index.js",
         "start": "node src/index.js",
         "migrate": "node src/migrate.js",
-        "seed": "node src/seed.js"
+        "seed": "node src/seed.js",
+        "criar-admin": "node src/criar-admin.js"
     },
     "dependencies": {
         "bcrypt": "^5.1.1",

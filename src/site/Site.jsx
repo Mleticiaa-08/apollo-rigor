@@ -8,10 +8,9 @@ import Entrar from './Entrar';
 import Conta from './Conta';
 import Casamento from './Casamento';
 import ProdutoModal from './ProdutoModal';
-import { useSessao } from './auth';
+import { useAuth } from '../api/useSessao';
 import { ScrollTape } from './ui';
 
-// hash <-> view. "como-funciona" e "atelie" são âncoras dentro da home.
 const ANCORAS = ['como-funciona', 'atelie'];
 const VIEWS = ['home', 'colecao', 'pedido', 'pacote', 'entrar', 'conta', 'casamento'];
 
@@ -28,8 +27,7 @@ export default function Site() {
   const [arg, setArg] = useState(null);
   const [rascunho, setRascunho] = useState(null);
   const [produtoAberto, setProdutoAberto] = useState(null);
-  const sessao = useSessao();
-  const cliente = sessao && sessao.tipo === 'cliente' ? sessao : null;
+  const { usuario: cliente } = useAuth();
 
   const go = useCallback((destino, extra) => {
     if (destino === 'como-funciona' || destino === 'atelie') {
@@ -61,7 +59,6 @@ export default function Site() {
       <ScrollTape />
       <div style={{ paddingLeft: 26 }}>
         <SiteNav view={scrollTo || view} go={go} />
-
         <main>
           {view === 'home' && <Home go={go} openProduto={openProduto} scrollTo={scrollTo} />}
           {view === 'colecao' && <Colecao openProduto={openProduto} foco={arg} />}
@@ -72,14 +69,7 @@ export default function Site() {
           {view === 'casamento' && <Casamento go={go} cliente={cliente} />}
         </main>
       </div>
-
-      {produtoAberto && (
-        <ProdutoModal
-          produto={produtoAberto}
-          onClose={() => setProdutoAberto(null)}
-          onContinuar={continuarPedido}
-        />
-      )}
+      {produtoAberto && (<ProdutoModal produto={produtoAberto} onClose={() => setProdutoAberto(null)} onContinuar={continuarPedido} />)}
     </div>
   );
 }
